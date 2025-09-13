@@ -25,7 +25,7 @@ export const HeroSection = () => {
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/cadastro/cliente">
+              <Link to="/cliente-dashboard">
                 <Button 
                   size="lg" 
                   className="bg-gradient-primary hover:bg-primary-hover text-white shadow-blue px-8 py-6 text-lg"
@@ -35,7 +35,7 @@ export const HeroSection = () => {
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
-              <Link to="/cadastro/profissional">
+              <Link to="/dashboard">
                 <Button 
                   size="lg" 
                   variant="outline" 

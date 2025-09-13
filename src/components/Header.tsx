@@ -2,9 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Calendar, BarChart3, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { InfoModal } from "./InfoModals";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState<string | null>(null);
 
   return (
     <header className="bg-background/95 backdrop-blur border-b border-card-border sticky top-0 z-50">
@@ -20,15 +22,24 @@ export const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link to="/como-funciona" className="text-muted-foreground hover:text-foreground transition-fast">
+            <button 
+              onClick={() => setModalOpen("how-it-works")}
+              className="text-muted-foreground hover:text-foreground transition-fast"
+            >
               Como Funciona
-            </Link>
-            <Link to="/profissionais" className="text-muted-foreground hover:text-foreground transition-fast">
+            </button>
+            <button 
+              onClick={() => setModalOpen("for-professionals")}
+              className="text-muted-foreground hover:text-foreground transition-fast"
+            >
               Para Profissionais
-            </Link>
-            <Link to="/clientes" className="text-muted-foreground hover:text-foreground transition-fast">
+            </button>
+            <button 
+              onClick={() => setModalOpen("for-clients")}
+              className="text-muted-foreground hover:text-foreground transition-fast"
+            >
               Para Clientes
-            </Link>
+            </button>
           </nav>
 
           {/* Desktop Actions */}
@@ -63,27 +74,33 @@ export const Header = () => {
         {isMenuOpen && (
           <div className="md:hidden border-t border-card-border bg-background">
             <nav className="flex flex-col py-4 space-y-2">
-              <Link
-                to="/como-funciona"
-                className="px-4 py-2 text-muted-foreground hover:text-foreground transition-fast"
-                onClick={() => setIsMenuOpen(false)}
+              <button
+                onClick={() => {
+                  setModalOpen("how-it-works");
+                  setIsMenuOpen(false);
+                }}
+                className="px-4 py-2 text-muted-foreground hover:text-foreground transition-fast text-left"
               >
                 Como Funciona
-              </Link>
-              <Link
-                to="/profissionais"
-                className="px-4 py-2 text-muted-foreground hover:text-foreground transition-fast"
-                onClick={() => setIsMenuOpen(false)}
+              </button>
+              <button
+                onClick={() => {
+                  setModalOpen("for-professionals");
+                  setIsMenuOpen(false);
+                }}
+                className="px-4 py-2 text-muted-foreground hover:text-foreground transition-fast text-left"
               >
                 Para Profissionais
-              </Link>
-              <Link
-                to="/clientes"
-                className="px-4 py-2 text-muted-foreground hover:text-foreground transition-fast"
-                onClick={() => setIsMenuOpen(false)}
+              </button>
+              <button
+                onClick={() => {
+                  setModalOpen("for-clients");
+                  setIsMenuOpen(false);
+                }}
+                className="px-4 py-2 text-muted-foreground hover:text-foreground transition-fast text-left"
               >
                 Para Clientes
-              </Link>
+              </button>
               <div className="flex flex-col space-y-2 px-4 pt-4">
                 <Link to="/login" onClick={() => setIsMenuOpen(false)}>
                   <Button variant="outline" className="w-full">
@@ -100,6 +117,23 @@ export const Header = () => {
           </div>
         )}
       </div>
+      
+      {/* Info Modals */}
+      <InfoModal
+        isOpen={modalOpen === "how-it-works"}
+        onClose={() => setModalOpen(null)}
+        type="how-it-works"
+      />
+      <InfoModal
+        isOpen={modalOpen === "for-professionals"}
+        onClose={() => setModalOpen(null)}
+        type="for-professionals"
+      />
+      <InfoModal
+        isOpen={modalOpen === "for-clients"}
+        onClose={() => setModalOpen(null)}
+        type="for-clients"
+      />
     </header>
   );
 };
