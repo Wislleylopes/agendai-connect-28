@@ -91,12 +91,37 @@ export const Header = () => {
                     <span className="hidden sm:inline">{profile?.full_name || 'Usuário'}</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="w-80">
+                  <div className="p-3 border-b">
+                    <p className="font-medium">{profile?.full_name}</p>
+                    <p className="text-sm text-muted-foreground">{user.email}</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="text-xs">Tipo:</span>
+                      <span className={`text-xs px-2 py-1 rounded-full ${
+                        profile?.user_role === 'admin' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' :
+                        profile?.user_role === 'professional' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
+                        'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                      }`}>
+                        {profile?.user_role === 'admin' ? 'Administrador' :
+                         profile?.user_role === 'professional' ? 'Profissional' : 'Cliente'}
+                      </span>
+                    </div>
+                    {profile?.phone && (
+                      <p className="text-xs text-muted-foreground mt-1">Tel: {profile.phone}</p>
+                    )}
+                    <p className="text-xs text-muted-foreground">ID: {user.id.slice(0, 8)}...</p>
+                  </div>
                   <DropdownMenuItem asChild>
                     <Link to={getDashboardLink()}>
                       {profile?.user_role === 'admin' ? 'Painel Admin' : 
                        profile?.user_role === 'professional' ? 'Painel Profissional' : 
                        'Painel Cliente'}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/user-info">
+                      <User className="w-4 h-4 mr-2" />
+                      Meus Dados
                     </Link>
                   </DropdownMenuItem>
                   {profile?.user_role === 'admin' && (
