@@ -91,12 +91,11 @@ export const Header = () => {
                     <span className="hidden sm:inline">{profile?.full_name || 'Usuário'}</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-80">
+                <DropdownMenuContent align="end" className="w-72">
                   <div className="p-3 border-b">
-                    <p className="font-medium">{profile?.full_name}</p>
                     <p className="text-sm text-muted-foreground">{user.email}</p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <span className="text-xs">Tipo:</span>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-sm font-medium">Tipo:</span>
                       <span className={`text-xs px-2 py-1 rounded-full ${
                         profile?.user_role === 'admin' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' :
                         profile?.user_role === 'professional' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
@@ -106,34 +105,47 @@ export const Header = () => {
                          profile?.user_role === 'professional' ? 'Profissional' : 'Cliente'}
                       </span>
                     </div>
-                    {profile?.phone && (
-                      <p className="text-xs text-muted-foreground mt-1">Tel: {profile.phone}</p>
-                    )}
-                    <p className="text-xs text-muted-foreground">ID: {user.id.slice(0, 8)}...</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      ID: {user.id.slice(0, 8)}...
+                    </p>
                   </div>
+                  
                   <DropdownMenuItem asChild>
                     <Link to={getDashboardLink()}>
-                      {profile?.user_role === 'admin' ? 'Painel Admin' : 
-                       profile?.user_role === 'professional' ? 'Painel Profissional' : 
-                       'Painel Cliente'}
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4" />
+                        {profile?.user_role === 'admin' ? 'Painel Admin' : 
+                         profile?.user_role === 'professional' ? 'Painel Profissional' : 
+                         'Painel Cliente'}
+                      </div>
                     </Link>
                   </DropdownMenuItem>
+                  
                   <DropdownMenuItem asChild>
                     <Link to="/user-info">
-                      <User className="w-4 h-4 mr-2" />
-                      Meus Dados
+                      <div className="flex items-center gap-2">
+                        <User className="w-4 h-4" />
+                        Meus Dados
+                      </div>
                     </Link>
                   </DropdownMenuItem>
+                  
                   {profile?.user_role === 'admin' && (
                     <DropdownMenuItem asChild>
                       <Link to="/admin-dashboard">
-                        Administração
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4" />
+                          Administração
+                        </div>
                       </Link>
                     </DropdownMenuItem>
                   )}
-                  <DropdownMenuItem onClick={handleSignOut}>
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Sair
+                  
+                  <DropdownMenuItem onClick={handleSignOut} className="text-red-600 dark:text-red-400">
+                    <div className="flex items-center gap-2">
+                      <LogOut className="w-4 h-4" />
+                      Sair
+                    </div>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -218,28 +230,48 @@ export const Header = () => {
               <div className="flex flex-col space-y-2 px-4 pt-4">
                 {user ? (
                   <>
+                    <div className="text-sm text-muted-foreground mb-2">
+                      <p>{user.email}</p>
+                      <p className="text-xs">
+                        {profile?.user_role === 'admin' ? 'Administrador' :
+                         profile?.user_role === 'professional' ? 'Profissional' : 'Cliente'}
+                      </p>
+                    </div>
+                    
                     <Link to={getDashboardLink()} onClick={() => setIsMenuOpen(false)}>
-                      <Button variant="outline" className="w-full">
+                      <Button variant="outline" className="w-full justify-start">
+                        <Calendar className="w-4 h-4 mr-2" />
                         {profile?.user_role === 'admin' ? 'Painel Admin' : 
                          profile?.user_role === 'professional' ? 'Painel Profissional' : 
-                         'Painel Cliente'} - {profile?.full_name}
+                         'Painel Cliente'}
                       </Button>
                     </Link>
+                    
+                    <Link to="/user-info" onClick={() => setIsMenuOpen(false)}>
+                      <Button variant="outline" className="w-full justify-start">
+                        <User className="w-4 h-4 mr-2" />
+                        Meus Dados
+                      </Button>
+                    </Link>
+                    
                     {profile?.user_role === 'admin' && (
                       <Link to="/admin-dashboard" onClick={() => setIsMenuOpen(false)}>
-                        <Button variant="outline" className="w-full">
+                        <Button variant="outline" className="w-full justify-start">
+                          <Calendar className="w-4 h-4 mr-2" />
                           Administração
                         </Button>
                       </Link>
                     )}
+                    
                     <Button 
                       variant="destructive" 
-                      className="w-full" 
+                      className="w-full justify-start" 
                       onClick={() => {
                         handleSignOut();
                         setIsMenuOpen(false);
                       }}
                     >
+                      <LogOut className="w-4 h-4 mr-2" />
                       Sair
                     </Button>
                   </>

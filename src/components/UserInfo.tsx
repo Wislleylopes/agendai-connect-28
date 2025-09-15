@@ -1,10 +1,16 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { User, Mail, Phone, MapPin, Building, FileText, Calendar } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { User, Mail, Phone, MapPin, Building, FileText, Calendar, ArrowLeftRight } from "lucide-react";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export const UserInfo = () => {
-  const { user, profile } = useAuth();
+  const { user, profile, updateProfile } = useAuth();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
 
   if (!user || !profile) {
     return (
@@ -48,12 +54,45 @@ export const UserInfo = () => {
     }
   };
 
+  const handleRoleChange = async () => {
+    if (profile.user_role === 'admin') {
+      toast({
+        title: "Ação não permitida",
+        description: "Administradores não podem alterar tipo de conta.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    const newRole = profile.user_role === 'client' ? 'professional' : 'client';
+    
+    try {
+      const { error } = await updateProfile({ user_role: newRole });
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Tipo de conta alterado!",
+        description: `Você agora é um ${getRoleLabel(newRole)}.`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erro ao alterar tipo de conta",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <User className="w-5 h-5" />
-          Informações do Usuário Logado
+          Meus Dados
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -63,6 +102,18 @@ export const UserInfo = () => {
             {getRoleLabel(profile.user_role)}
           </Badge>
         </div>
+
+        {profile.user_role !== 'admin' && (
+          <Button 
+            variant="outline" 
+            className="w-full" 
+            onClick={handleRoleChange}
+            disabled={loading}
+          >
+            <ArrowLeftRight className="w-4 h-4 mr-2" />
+            {loading ? 'Alterando...' : `Alterar para ${profile.user_role === 'client' ? 'Profissional' : 'Cliente'}`}
+          </Button>
+        )}
 
         <div className="space-y-3">
           <div className="flex items-center gap-2">
