@@ -26,7 +26,7 @@ export default function LoginPage() {
           navigate('/admin-dashboard');
           break;
         case 'professional':
-          navigate('/dashboard');
+          navigate('/professional-dashboard');
           break;
         case 'client':
           navigate('/cliente-dashboard');
