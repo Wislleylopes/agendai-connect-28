@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import AdminDashboard from "./pages/AdminDashboard";
+import ProfessionalDashboard from "./pages/ProfessionalDashboard";
 import NotFound from "./pages/NotFound";
 import ClientDashboard from "./pages/ClientDashboard";
 
@@ -29,6 +30,7 @@ const App = () => (
               <Route path="/signup" element={<SignUpPage />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/cliente-dashboard" element={<ClientDashboard />} />
+              <Route path="/professional-dashboard" element={<ProfessionalDashboard />} />
               <Route path="/admin-dashboard" element={<AdminDashboard />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

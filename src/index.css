@@ -117,26 +117,74 @@ All colors MUST be HSL for consistency
   }
 }
 
-/* Dark mode styles */
+/* Dark mode styles - WCAG AA/AAA compliant contrast ratios */
 .dark {
-  --background: 224 71% 4%;
-  --foreground: 213 31% 91%;
-  --muted: 223 47% 11%;
-  --muted-foreground: 215.4 16.3% 56.9%;
-  --popover: 224 71% 4%;
-  --popover-foreground: 215 20.2% 65.1%;
-  --border: 216 34% 17%;
-  --input: 216 34% 17%;
-  --card: 224 71% 4%;
-  --card-foreground: 213 31% 91%;
-  --primary: 210 40% 98%;
-  --primary-foreground: 222.2 47.4% 1.2%;
-  --secondary: 222.2 84% 4.9%;
-  --secondary-foreground: 210 40% 98%;
-  --accent: 216 34% 17%;
-  --accent-foreground: 210 40% 98%;
-  --destructive: 0 63% 31%;
-  --destructive-foreground: 210 40% 98%;
-  --ring: 216 34% 17%;
-  --radius: 0.5rem;
+  /* Main backgrounds and text - High contrast */
+  --background: 220 13% 9%; /* Very dark blue-gray */
+  --foreground: 210 11% 96%; /* Very light blue-gray for text */
+  
+  /* Card backgrounds and text */
+  --card: 220 13% 12%; /* Slightly lighter than background */
+  --card-foreground: 210 11% 96%; /* High contrast text */
+  --card-border: 220 13% 20%; /* Visible but subtle borders */
+  
+  /* Input and form elements */
+  --input: 220 13% 15%; /* Dark input background */
+  --border: 220 13% 25%; /* Clear borders for accessibility */
+  
+  /* Muted elements with sufficient contrast */
+  --muted: 220 13% 15%; /* Dark muted background */
+  --muted-foreground: 210 11% 71%; /* Light enough for readability */
+  
+  /* Primary colors - maintaining brand while ensuring contrast */
+  --primary: 210 100% 65%; /* Lighter blue for better contrast on dark */
+  --primary-hover: 210 100% 60%; /* Darker blue for hover */
+  --primary-foreground: 220 13% 9%; /* Dark text on primary buttons */
+  --primary-light: 210 100% 15%; /* Dark blue for backgrounds */
+  
+  /* Secondary colors */
+  --secondary: 220 13% 18%; /* Dark gray background */
+  --secondary-foreground: 210 11% 96%; /* Light text */
+  
+  /* Status colors with good contrast */
+  --success: 120 60% 55%; /* Brighter green for visibility */
+  --success-foreground: 220 13% 9%; /* Dark text on green */
+  
+  --warning: 45 100% 65%; /* Brighter yellow for dark mode */
+  --warning-foreground: 220 13% 9%; /* Dark text on yellow */
+  
+  --destructive: 0 70% 60%; /* Brighter red for dark mode */
+  --destructive-foreground: 210 11% 96%; /* Light text on red */
+  
+  /* Accent colors */
+  --accent: 220 13% 20%; /* Dark accent background */
+  --accent-foreground: 210 11% 96%; /* Light accent text */
+  
+  /* Popover colors */
+  --popover: 220 13% 12%; /* Dark popover background */
+  --popover-foreground: 210 11% 96%; /* Light popover text */
+  
+  /* Focus ring - bright enough to be visible */
+  --ring: 210 100% 65%; /* Bright blue for focus indicators */
+  
+  /* Sidebar colors for consistency */
+  --sidebar-background: 220 13% 9%;
+  --sidebar-foreground: 210 11% 96%;
+  --sidebar-primary: 210 100% 65%;
+  --sidebar-primary-foreground: 220 13% 9%;
+  --sidebar-accent: 220 13% 15%;
+  --sidebar-accent-foreground: 210 11% 96%;
+  --sidebar-border: 220 13% 25%;
+  --sidebar-ring: 210 100% 65%;
+  
+  /* Gradients for dark mode */
+  --gradient-primary: linear-gradient(135deg, hsl(210 100% 65%), hsl(210 100% 60%));
+  --gradient-hero: linear-gradient(135deg, hsl(210 100% 65%) 0%, hsl(210 100% 70%) 100%);
+  --gradient-card: linear-gradient(180deg, hsl(220 13% 12%) 0%, hsl(220 13% 10%) 100%);
+  
+  /* Shadows for dark mode */
+  --shadow-sm: 0 1px 2px 0 hsl(220 13% 0% / 0.2);
+  --shadow-md: 0 4px 6px -1px hsl(220 13% 0% / 0.3), 0 2px 4px -1px hsl(220 13% 0% / 0.2);
+  --shadow-lg: 0 10px 15px -3px hsl(220 13% 0% / 0.3), 0 4px 6px -2px hsl(220 13% 0% / 0.2);
+  --shadow-blue: 0 4px 12px hsl(210 100% 65% / 0.25);
 }

@@ -26,7 +26,7 @@ export const Header = () => {
       case 'admin':
         return '/admin-dashboard';
       case 'professional':
-        return '/dashboard';
+        return '/professional-dashboard';
       case 'client':
         return '/cliente-dashboard';
       default:
@@ -94,9 +94,18 @@ export const Header = () => {
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem asChild>
                     <Link to={getDashboardLink()}>
-                      Painel
+                      {profile?.user_role === 'admin' ? 'Painel Admin' : 
+                       profile?.user_role === 'professional' ? 'Painel Profissional' : 
+                       'Painel Cliente'}
                     </Link>
                   </DropdownMenuItem>
+                  {profile?.user_role === 'admin' && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin-dashboard">
+                        Administração
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem onClick={handleSignOut}>
                     <LogOut className="w-4 h-4 mr-2" />
                     Sair
@@ -186,9 +195,18 @@ export const Header = () => {
                   <>
                     <Link to={getDashboardLink()} onClick={() => setIsMenuOpen(false)}>
                       <Button variant="outline" className="w-full">
-                        Painel - {profile?.full_name}
+                        {profile?.user_role === 'admin' ? 'Painel Admin' : 
+                         profile?.user_role === 'professional' ? 'Painel Profissional' : 
+                         'Painel Cliente'} - {profile?.full_name}
                       </Button>
                     </Link>
+                    {profile?.user_role === 'admin' && (
+                      <Link to="/admin-dashboard" onClick={() => setIsMenuOpen(false)}>
+                        <Button variant="outline" className="w-full">
+                          Administração
+                        </Button>
+                      </Link>
+                    )}
                     <Button 
                       variant="destructive" 
                       className="w-full" 
