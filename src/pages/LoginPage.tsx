@@ -4,17 +4,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { Calendar, Eye, EyeOff, ArrowLeft, RefreshCw } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { NetworkStatusIndicator } from "@/components/NetworkStatusIndicator";
+import { isNetworkError } from "@/utils/retryUtils";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [clientForm, setClientForm] = useState({ email: '', password: '' });
   const [professionalForm, setProfessionalForm] = useState({ email: '', password: '' });
-  const { signIn, user, profile } = useAuth();
+  const [lastAttemptedLogin, setLastAttemptedLogin] = useState<{ email: string; password: string; userType: 'client' | 'professional' } | null>(null);
+  const { signIn, user, profile, networkError, retryLastOperation } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -42,21 +45,46 @@ export default function LoginPage() {
     setLoading(true);
 
     const form = userType === 'client' ? clientForm : professionalForm;
+    setLastAttemptedLogin({ email: form.email, password: form.password, userType });
 
     try {
       const { error } = await signIn(form.email, form.password);
 
       if (error) {
-        toast({
-          title: "Erro no login",
-          description: error.message,
-          variant: "destructive",
-        });
+        // Only show toast for non-network errors (network errors are handled in AuthContext)
+        if (!isNetworkError(error)) {
+          toast({
+            title: "Erro no login",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
       }
     } catch (error) {
       console.error('Error during login:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleRetryLogin = async () => {
+    if (lastAttemptedLogin) {
+      setLoading(true);
+      try {
+        const { error } = await signIn(lastAttemptedLogin.email, lastAttemptedLogin.password);
+        
+        if (error && !isNetworkError(error)) {
+          toast({
+            title: "Erro no login",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        console.error('Error during retry login:', error);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -68,6 +96,9 @@ export default function LoginPage() {
           <ArrowLeft className="w-4 h-4 mr-2" />
           Voltar ao Início
         </Link>
+
+        {/* Network Status Indicator */}
+        <NetworkStatusIndicator />
 
         <Card className="border-card-border shadow-lg">
           <CardHeader className="text-center space-y-4">
@@ -148,6 +179,20 @@ export default function LoginPage() {
                   >
                     {loading ? "Entrando..." : "Entrar como Cliente"}
                   </Button>
+
+                  {/* Retry button for network errors */}
+                  {networkError && lastAttemptedLogin && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full"
+                      onClick={handleRetryLogin}
+                      disabled={loading}
+                    >
+                      <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                      Tentar Novamente
+                    </Button>
+                  )}
                 </form>
 
                 <div className="text-center">
@@ -217,6 +262,20 @@ export default function LoginPage() {
                   >
                     {loading ? "Entrando..." : "Entrar como Profissional"}
                   </Button>
+
+                  {/* Retry button for network errors */}
+                  {networkError && lastAttemptedLogin && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full"
+                      onClick={handleRetryLogin}
+                      disabled={loading}
+                    >
+                      <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                      Tentar Novamente
+                    </Button>
+                  )}
                 </form>
 
                 <div className="text-center">
