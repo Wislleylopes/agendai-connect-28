@@ -16,15 +16,19 @@ export const Header = () => {
 
   const handleSignOut = async () => {
     try {
-      console.log('Iniciando logout...');
+      console.log('Header: Iniciando logout...');
       await signOut();
-      console.log('Logout realizado, redirecionando...');
-      // Force navigation to home page after logout
-      window.location.href = '/';
+      console.log('Header: Logout realizado, redirecionando...');
+      
+      // Clear any remaining state and force redirect
+      setTimeout(() => {
+        window.location.replace('/');
+      }, 100);
+      
     } catch (error) {
       console.error('Error during logout:', error);
       // Force navigation even if logout fails
-      window.location.href = '/';
+      window.location.replace('/');
     }
   };
 

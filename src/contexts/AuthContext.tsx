@@ -31,6 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isSigningOut, setIsSigningOut] = useState(false);
   const { toast } = useToast();
 
   const fetchProfile = async (userId: string) => {
@@ -52,30 +53,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth state change:', event, session);
+        
+        // Don't process auth changes during sign out
+        if (isSigningOut && event !== 'SIGNED_OUT') {
+          return;
+        }
+        
         setSession(session);
         setUser(session?.user ?? null);
         
-        if (session?.user) {
+        if (session?.user && !isSigningOut) {
           setTimeout(() => fetchProfile(session.user.id), 0);
         } else {
           setProfile(null);
         }
+        
+        // Reset signing out flag after SIGNED_OUT event
+        if (event === 'SIGNED_OUT') {
+          setIsSigningOut(false);
+        }
+        
         setLoading(false);
       }
     );
 
-    // Check for existing session
+    // Check for existing session only on mount
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
+      if (!isSigningOut) {
+        setSession(session);
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          fetchProfile(session.user.id);
+        }
       }
       setLoading(false);
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [isSigningOut]);
 
   const signUp = async (email: string, password: string, userData: any) => {
     try {
@@ -119,24 +135,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     try {
-      // Clear local state first
+      console.log('Iniciando processo de logout...');
+      setIsSigningOut(true);
+      
+      // Clear local state immediately
       setUser(null);
       setSession(null);
       setProfile(null);
       
-      // Then call Supabase signOut
-      const { error } = await supabase.auth.signOut();
+      // Clear localStorage to prevent auto-login
+      localStorage.removeItem('supabase.auth.token');
+      localStorage.clear();
+      
+      // Call Supabase signOut
+      const { error } = await supabase.auth.signOut({ scope: 'global' });
       
       if (error) {
-        console.error('Error signing out:', error);
-        // Even if there's an error, we've already cleared local state
+        console.error('Error signing out from Supabase:', error);
       }
+      
+      console.log('Logout concluído');
     } catch (error) {
       console.error('Error during signOut:', error);
-      // Force clear state even if network fails
+    } finally {
+      // Ensure state is cleared regardless of errors
       setUser(null);
       setSession(null);
       setProfile(null);
+      setIsSigningOut(false);
     }
   };
 
