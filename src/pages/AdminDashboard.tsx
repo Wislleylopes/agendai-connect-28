@@ -43,11 +43,6 @@ export default function AdminDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
 
-  // Redirect if not admin
-  if (!loading && (!profile || profile.user_role !== 'admin')) {
-    return <Navigate to="/" replace />;
-  }
-
   useEffect(() => {
     if (profile?.user_role === 'admin') {
       fetchUsers();
@@ -156,12 +151,18 @@ export default function AdminDashboard() {
     );
   };
 
+  // Handle loading state
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
       </div>
     );
+  }
+
+  // Handle unauthorized access
+  if (!profile || profile.user_role !== 'admin') {
+    return <Navigate to="/" replace />;
   }
 
   return (
