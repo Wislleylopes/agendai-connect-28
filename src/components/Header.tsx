@@ -15,8 +15,17 @@ export const Header = () => {
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
-    await signOut();
-    navigate('/');
+    try {
+      console.log('Iniciando logout...');
+      await signOut();
+      console.log('Logout realizado, redirecionando...');
+      // Force navigation to home page after logout
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Error during logout:', error);
+      // Force navigation even if logout fails
+      window.location.href = '/';
+    }
   };
 
   const getDashboardLink = () => {
