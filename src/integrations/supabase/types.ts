@@ -14,7 +14,182 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      appointments: {
+        Row: {
+          appointment_date: string
+          client_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          professional_id: string
+          service_id: string
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          appointment_date: string
+          client_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          professional_id: string
+          service_id: string
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          appointment_date?: string
+          client_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          professional_id?: string
+          service_id?: string
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      companies: {
+        Row: {
+          cnpj: string | null
+          company_address: string | null
+          company_name: string
+          created_at: string
+          id: string
+          professional_id: string
+          updated_at: string
+        }
+        Insert: {
+          cnpj?: string | null
+          company_address?: string | null
+          company_name: string
+          created_at?: string
+          id?: string
+          professional_id: string
+          updated_at?: string
+        }
+        Update: {
+          cnpj?: string | null
+          company_address?: string | null
+          company_name?: string
+          created_at?: string
+          id?: string
+          professional_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "companies_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          address: string | null
+          created_at: string
+          full_name: string
+          id: string
+          phone: string | null
+          theme_preference: string | null
+          updated_at: string
+          user_id: string
+          user_role: Database["public"]["Enums"]["user_role"]
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          full_name: string
+          id?: string
+          phone?: string | null
+          theme_preference?: string | null
+          updated_at?: string
+          user_id: string
+          user_role: Database["public"]["Enums"]["user_role"]
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          full_name?: string
+          id?: string
+          phone?: string | null
+          theme_preference?: string | null
+          updated_at?: string
+          user_id?: string
+          user_role?: Database["public"]["Enums"]["user_role"]
+        }
+        Relationships: []
+      }
+      services: {
+        Row: {
+          created_at: string
+          description: string | null
+          duration: number
+          id: string
+          is_active: boolean | null
+          name: string
+          price: number
+          professional_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          duration: number
+          id?: string
+          is_active?: boolean | null
+          name: string
+          price: number
+          professional_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          duration?: number
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          price?: number
+          professional_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "services_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +198,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      user_role: "client" | "professional" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +325,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      user_role: ["client", "professional", "admin"],
+    },
   },
 } as const

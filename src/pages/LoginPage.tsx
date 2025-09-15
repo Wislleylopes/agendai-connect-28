@@ -1,16 +1,64 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Eye, EyeOff, ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [clientForm, setClientForm] = useState({ email: '', password: '' });
   const [professionalForm, setProfessionalForm] = useState({ email: '', password: '' });
+  const { signIn, user, profile } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user && profile) {
+      switch (profile.user_role) {
+        case 'admin':
+          navigate('/admin-dashboard');
+          break;
+        case 'professional':
+          navigate('/dashboard');
+          break;
+        case 'client':
+          navigate('/cliente-dashboard');
+          break;
+        default:
+          navigate('/');
+      }
+    }
+  }, [user, profile, navigate]);
+
+  const handleLogin = async (e: React.FormEvent, userType: 'client' | 'professional') => {
+    e.preventDefault();
+    setLoading(true);
+
+    const form = userType === 'client' ? clientForm : professionalForm;
+
+    try {
+      const { error } = await signIn(form.email, form.password);
+
+      if (error) {
+        toast({
+          title: "Erro no login",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-light to-background flex items-center justify-center p-4">
@@ -45,7 +93,7 @@ export default function LoginPage() {
 
               {/* Client Login */}
               <TabsContent value="client" className="space-y-4">
-                <form className="space-y-4">
+                <form onSubmit={(e) => handleLogin(e, 'client')} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="client-email">E-mail</Label>
                     <Input
@@ -93,15 +141,19 @@ export default function LoginPage() {
                     </Link>
                   </div>
 
-                  <Button className="w-full bg-gradient-primary hover:bg-primary-hover text-white">
-                    Entrar como Cliente
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-gradient-primary hover:bg-primary-hover text-white"
+                    disabled={loading}
+                  >
+                    {loading ? "Entrando..." : "Entrar como Cliente"}
                   </Button>
                 </form>
 
                 <div className="text-center">
                   <p className="text-sm text-muted-foreground">
                     Não tem uma conta?{" "}
-                    <Link to="/cadastro/cliente" className="text-primary hover:underline font-medium">
+                    <Link to="/signup" className="text-primary hover:underline font-medium">
                       Cadastre-se aqui
                     </Link>
                   </p>
@@ -110,7 +162,7 @@ export default function LoginPage() {
 
               {/* Professional Login */}
               <TabsContent value="professional" className="space-y-4">
-                <form className="space-y-4">
+                <form onSubmit={(e) => handleLogin(e, 'professional')} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="prof-email">E-mail</Label>
                     <Input
@@ -158,17 +210,19 @@ export default function LoginPage() {
                     </Link>
                   </div>
 
-                  <Link to="/dashboard">
-                    <Button className="w-full bg-gradient-primary hover:bg-primary-hover text-white">
-                      Entrar como Profissional
-                    </Button>
-                  </Link>
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-gradient-primary hover:bg-primary-hover text-white"
+                    disabled={loading}
+                  >
+                    {loading ? "Entrando..." : "Entrar como Profissional"}
+                  </Button>
                 </form>
 
                 <div className="text-center">
                   <p className="text-sm text-muted-foreground">
                     Não tem uma conta?{" "}
-                    <Link to="/cadastro/profissional" className="text-primary hover:underline font-medium">
+                    <Link to="/signup" className="text-primary hover:underline font-medium">
                       Cadastre-se aqui
                     </Link>
                   </p>

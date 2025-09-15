@@ -25,27 +25,38 @@ export const HeroSection = () => {
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/cliente-dashboard">
+              <Link to="/signup">
                 <Button 
                   size="lg" 
-                  className="bg-gradient-primary hover:bg-primary-hover text-white shadow-blue px-8 py-6 text-lg"
+                  className="bg-gradient-primary hover:bg-primary-hover text-white shadow-blue px-8 py-6 text-lg w-full sm:w-auto"
                 >
                   <Users className="w-5 h-5 mr-2" />
-                  Sou Cliente
+                  Começar Agora
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
-              <Link to="/dashboard">
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-6 text-lg"
-                >
-                  <BarChart3 className="w-5 h-5 mr-2" />
-                  Sou Profissional
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-              </Link>
+              <div className="flex gap-2">
+                <Link to="/cliente-dashboard">
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    className="border-2 border-primary text-primary hover:bg-primary hover:text-white px-6 py-6 text-lg"
+                  >
+                    <Users className="w-5 h-5 mr-2" />
+                    Sou Cliente
+                  </Button>
+                </Link>
+                <Link to="/dashboard">
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    className="border-2 border-primary text-primary hover:bg-primary hover:text-white px-6 py-6 text-lg"
+                  >
+                    <BarChart3 className="w-5 h-5 mr-2" />
+                    Sou Profissional
+                  </Button>
+                </Link>
+              </div>
             </div>
 
             {/* Stats */}

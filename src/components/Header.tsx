@@ -1,12 +1,38 @@
 import { Button } from "@/components/ui/button";
-import { Calendar, BarChart3, Menu, X } from "lucide-react";
+import { Calendar, Moon, Sun, LogOut, User, Menu, X } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useTheme } from "@/contexts/ThemeContext";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { InfoModal } from "./InfoModals";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState<string | null>(null);
+  const { user, profile, signOut } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+
+  const getDashboardLink = () => {
+    if (!profile) return '/';
+    
+    switch (profile.user_role) {
+      case 'admin':
+        return '/admin-dashboard';
+      case 'professional':
+        return '/dashboard';
+      case 'client':
+        return '/cliente-dashboard';
+      default:
+        return '/';
+    }
+  };
 
   return (
     <header className="bg-background/95 backdrop-blur border-b border-card-border sticky top-0 z-50">
@@ -44,16 +70,53 @@ export const Header = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link to="/login">
-              <Button variant="ghost" className="text-muted-foreground hover:text-foreground">
-                Entrar
-              </Button>
-            </Link>
-            <Link to="/cadastro">
-              <Button className="bg-gradient-primary hover:bg-primary-hover text-white shadow-blue">
-                Começar Agora
-              </Button>
-            </Link>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              className="w-9 h-9"
+            >
+              {theme === 'light' ? (
+                <Moon className="h-4 w-4" />
+              ) : (
+                <Sun className="h-4 w-4" />
+              )}
+            </Button>
+
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="flex items-center space-x-2">
+                    <User className="w-4 h-4" />
+                    <span className="hidden sm:inline">{profile?.full_name || 'Usuário'}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem asChild>
+                    <Link to={getDashboardLink()}>
+                      Painel
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sair
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button variant="ghost" className="text-muted-foreground hover:text-foreground">
+                    Entrar
+                  </Button>
+                </Link>
+                <Link to="/signup">
+                  <Button className="bg-gradient-primary hover:bg-primary-hover text-white shadow-blue">
+                    Começar Agora
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -101,17 +164,56 @@ export const Header = () => {
               >
                 Para Clientes
               </button>
+              
+              <div className="flex items-center justify-between px-4 py-2">
+                <span className="text-muted-foreground">Tema</span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleTheme}
+                  className="w-9 h-9"
+                >
+                  {theme === 'light' ? (
+                    <Moon className="h-4 w-4" />
+                  ) : (
+                    <Sun className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+
               <div className="flex flex-col space-y-2 px-4 pt-4">
-                <Link to="/login" onClick={() => setIsMenuOpen(false)}>
-                  <Button variant="outline" className="w-full">
-                    Entrar
-                  </Button>
-                </Link>
-                <Link to="/cadastro" onClick={() => setIsMenuOpen(false)}>
-                  <Button className="w-full bg-gradient-primary hover:bg-primary-hover text-white">
-                    Começar Agora
-                  </Button>
-                </Link>
+                {user ? (
+                  <>
+                    <Link to={getDashboardLink()} onClick={() => setIsMenuOpen(false)}>
+                      <Button variant="outline" className="w-full">
+                        Painel - {profile?.full_name}
+                      </Button>
+                    </Link>
+                    <Button 
+                      variant="destructive" 
+                      className="w-full" 
+                      onClick={() => {
+                        handleSignOut();
+                        setIsMenuOpen(false);
+                      }}
+                    >
+                      Sair
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/login" onClick={() => setIsMenuOpen(false)}>
+                      <Button variant="outline" className="w-full">
+                        Entrar
+                      </Button>
+                    </Link>
+                    <Link to="/signup" onClick={() => setIsMenuOpen(false)}>
+                      <Button className="w-full bg-gradient-primary hover:bg-primary-hover text-white">
+                        Começar Agora
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </nav>
           </div>
