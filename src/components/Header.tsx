@@ -6,6 +6,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import { InfoModal } from "./InfoModals";
+import { useAppointmentNotifications } from "@/hooks/useAppointmentNotifications";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -13,6 +14,9 @@ export const Header = () => {
   const { user, profile, signOut } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  
+  // Initialize appointment notifications
+  useAppointmentNotifications();
 
   const handleSignOut = async () => {
     try {
@@ -41,7 +45,7 @@ export const Header = () => {
       case 'professional':
         return '/professional-dashboard';
       case 'client':
-        return '/cliente-dashboard';
+        return '/client-dashboard';
       default:
         return '/';
     }

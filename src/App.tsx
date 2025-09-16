@@ -15,6 +15,8 @@ import ProfessionalDashboard from "./pages/ProfessionalDashboard";
 import NotFound from "./pages/NotFound";
 import ClientDashboard from "./pages/ClientDashboard";
 import UserInfoPage from "./pages/UserInfoPage";
+import { EnhancedClientDashboard } from "./pages/EnhancedClientDashboard";
+import { EnhancedProfessionalDashboard } from "./pages/EnhancedProfessionalDashboard";
 
 const queryClient = new QueryClient();
 
@@ -31,8 +33,8 @@ const App = () => (
               <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
               <Route path="/signup" element={<PublicRoute><SignUpPage /></PublicRoute>} />
               <Route path="/dashboard" element={<ProfessionalRoute><Dashboard /></ProfessionalRoute>} />
-              <Route path="/client-dashboard" element={<ClientRoute><ClientDashboard /></ClientRoute>} />
-              <Route path="/professional-dashboard" element={<ProfessionalRoute><ProfessionalDashboard /></ProfessionalRoute>} />
+              <Route path="/client-dashboard" element={<ClientRoute><EnhancedClientDashboard /></ClientRoute>} />
+              <Route path="/professional-dashboard" element={<ProfessionalRoute><EnhancedProfessionalDashboard /></ProfessionalRoute>} />
               <Route path="/admin-dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
               <Route path="/user-info" element={<UserInfoPage />} />
               <Route path="*" element={<NotFound />} />

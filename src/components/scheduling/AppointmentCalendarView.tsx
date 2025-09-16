@@ -48,11 +48,11 @@ export const AppointmentCalendarView: React.FC = () => {
           status,
           appointment_confirmation,
           notes,
-          client:client_id (
+          client:profiles!appointments_client_id_fkey (
             full_name,
             phone
           ),
-          service:service_id (
+          service:services!appointments_service_id_fkey (
             name,
             duration
           )
@@ -63,7 +63,7 @@ export const AppointmentCalendarView: React.FC = () => {
         .order('appointment_date', { ascending: true });
 
       if (error) throw error;
-      setAppointments(data || []);
+      setAppointments(data as Appointment[] || []);
     } catch (error) {
       console.error('Error fetching appointments:', error);
     } finally {
