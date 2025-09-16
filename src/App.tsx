@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { PublicRoute, ClientRoute, ProfessionalRoute, AdminRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import LoginPage from "./pages/LoginPage";
@@ -26,15 +27,14 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/signup" element={<SignUpPage />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/cliente-dashboard" element={<ClientDashboard />} />
-              <Route path="/professional-dashboard" element={<ProfessionalDashboard />} />
-              <Route path="/admin-dashboard" element={<AdminDashboard />} />
+              <Route path="/" element={<PublicRoute><Index /></PublicRoute>} />
+              <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
+              <Route path="/signup" element={<PublicRoute><SignUpPage /></PublicRoute>} />
+              <Route path="/dashboard" element={<ProfessionalRoute><Dashboard /></ProfessionalRoute>} />
+              <Route path="/client-dashboard" element={<ClientRoute><ClientDashboard /></ClientRoute>} />
+              <Route path="/professional-dashboard" element={<ProfessionalRoute><ProfessionalDashboard /></ProfessionalRoute>} />
+              <Route path="/admin-dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
               <Route path="/user-info" element={<UserInfoPage />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

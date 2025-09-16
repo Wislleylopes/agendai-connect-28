@@ -25,32 +25,50 @@ import {
   CheckCircle, 
   XCircle 
 } from "lucide-react";
-
-// Mock data for charts
-const revenueData = [
-  { month: 'Jan', revenue: 2400, services: 24 },
-  { month: 'Fev', revenue: 1398, services: 14 },
-  { month: 'Mar', revenue: 9800, services: 98 },
-  { month: 'Abr', revenue: 3908, services: 39 },
-  { month: 'Mai', revenue: 4800, services: 48 },
-  { month: 'Jun', revenue: 3800, services: 38 },
-];
-
-const servicesData = [
-  { name: 'Corte Masculino', value: 45, color: '#007BFF' },
-  { name: 'Barba', value: 25, color: '#17A2B8' },
-  { name: 'Sobrancelha', value: 20, color: '#28A745' },
-  { name: 'Outros', value: 10, color: '#FFC107' },
-];
-
-const upcomingAppointments = [
-  { id: 1, client: 'João Silva', service: 'Corte Masculino', time: '09:00', status: 'confirmed' },
-  { id: 2, client: 'Maria Santos', service: 'Escova', time: '10:30', status: 'pending' },
-  { id: 3, client: 'Pedro Costa', service: 'Barba', time: '14:00', status: 'confirmed' },
-  { id: 4, client: 'Ana Lima', service: 'Sobrancelha', time: '15:30', status: 'confirmed' },
-];
+import { useDashboardData } from "@/hooks/useDashboardData";
+import { DashboardSkeleton } from "@/components/ui/loading-skeleton";
+import { useAuth } from "@/contexts/AuthContext";
+import { Navigate } from "react-router-dom";
 
 export default function Dashboard() {
+  const { profile, loading: authLoading } = useAuth();
+  const { stats, monthlyData, serviceDistribution, upcomingAppointments, loading, error } = useDashboardData();
+
+  // Handle loading state
+  if (authLoading || loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-8">
+          <DashboardSkeleton />
+        </div>
+      </div>
+    );
+  }
+
+  // Handle unauthorized access
+  if (!profile || profile.user_role !== 'professional') {
+    return <Navigate to="/" replace />;
+  }
+
+  // Handle error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-destructive mb-2">Erro</h2>
+          <p className="text-muted-foreground">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(value);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -59,10 +77,10 @@ export default function Dashboard() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold">Dashboard</h1>
-              <p className="text-blue-100 mt-2">Bem-vindo de volta, Carlos Barbeiro!</p>
+              <p className="text-blue-100 mt-2">Bem-vindo de volta, {profile?.full_name || 'Profissional'}!</p>
             </div>
             <div className="text-right">
-              <div className="text-2xl font-bold">R$ 4.800</div>
+              <div className="text-2xl font-bold">{formatCurrency(stats.monthlyRevenue)}</div>
               <div className="text-blue-100">Ganhos este mês</div>
             </div>
           </div>
@@ -77,14 +95,17 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Agendamentos Hoje</p>
-                  <p className="text-2xl font-bold text-foreground">8</p>
+                  <p className="text-2xl font-bold text-foreground">{stats.todayAppointments}</p>
                 </div>
                 <Calendar className="w-8 h-8 text-primary" />
               </div>
               <div className="flex items-center mt-2">
                 <TrendingUp className="w-4 h-4 text-success mr-1" />
-                <span className="text-sm text-success">+12%</span>
-                <span className="text-sm text-muted-foreground ml-1">vs ontem</span>
+                <span className="text-sm text-success">
+                  {stats.todayAppointments > 0 ? '+' : ''}
+                  {Math.round((stats.todayAppointments / Math.max(stats.totalAppointments, 1)) * 100)}%
+                </span>
+                <span className="text-sm text-muted-foreground ml-1">do total</span>
               </div>
             </CardContent>
           </Card>
@@ -94,14 +115,16 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Receita Mensal</p>
-                  <p className="text-2xl font-bold text-foreground">R$ 4.800</p>
+                  <p className="text-2xl font-bold text-foreground">{formatCurrency(stats.monthlyRevenue)}</p>
                 </div>
                 <DollarSign className="w-8 h-8 text-primary" />
               </div>
               <div className="flex items-center mt-2">
                 <TrendingUp className="w-4 h-4 text-success mr-1" />
-                <span className="text-sm text-success">+26%</span>
-                <span className="text-sm text-muted-foreground ml-1">vs mês anterior</span>
+                <span className="text-sm text-success">
+                  +{Math.round((stats.completedAppointments / Math.max(stats.totalAppointments, 1)) * 100)}%
+                </span>
+                <span className="text-sm text-muted-foreground ml-1">serviços concluídos</span>
               </div>
             </CardContent>
           </Card>
@@ -111,17 +134,17 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Avaliação Média</p>
-                  <p className="text-2xl font-bold text-foreground">4.8</p>
+                  <p className="text-2xl font-bold text-foreground">{stats.averageRating.toFixed(1)}</p>
                 </div>
                 <Star className="w-8 h-8 text-primary" />
               </div>
               <div className="flex items-center mt-2">
                 <div className="flex">
                   {[1,2,3,4,5].map((star) => (
-                    <Star key={star} className={`w-4 h-4 ${star <= 4 ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} />
+                    <Star key={star} className={`w-4 h-4 ${star <= Math.floor(stats.averageRating) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} />
                   ))}
                 </div>
-                <span className="text-sm text-muted-foreground ml-2">156 avaliações</span>
+                <span className="text-sm text-muted-foreground ml-2">{stats.completedAppointments} avaliações</span>
               </div>
             </CardContent>
           </Card>
@@ -131,14 +154,17 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Clientes Únicos</p>
-                  <p className="text-2xl font-bold text-foreground">142</p>
+                  <p className="text-2xl font-bold text-foreground">{stats.uniqueClients}</p>
                 </div>
                 <Users className="w-8 h-8 text-primary" />
               </div>
               <div className="flex items-center mt-2">
                 <TrendingUp className="w-4 h-4 text-success mr-1" />
-                <span className="text-sm text-success">+8%</span>
-                <span className="text-sm text-muted-foreground ml-1">novos este mês</span>
+                <span className="text-sm text-success">
+                  {stats.uniqueClients > 0 ? '+' : ''}
+                  {Math.round((stats.uniqueClients / Math.max(stats.totalAppointments, 1)) * 100)}%
+                </span>
+                <span className="text-sm text-muted-foreground ml-1">taxa de retenção</span>
               </div>
             </CardContent>
           </Card>
@@ -157,7 +183,7 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={revenueData}>
+                  <LineChart data={monthlyData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#E5E5E5" />
                     <XAxis dataKey="month" stroke="#666666" />
                     <YAxis stroke="#666666" />
@@ -166,7 +192,11 @@ export default function Dashboard() {
                         backgroundColor: 'white', 
                         border: '1px solid #E5E5E5',
                         borderRadius: '8px'
-                      }} 
+                      }}
+                      formatter={(value: number, name: string) => [
+                        name === 'revenue' ? formatCurrency(value) : value,
+                        name === 'revenue' ? 'Receita' : 'Serviços'
+                      ]}
                     />
                     <Line 
                       type="monotone" 
@@ -190,7 +220,7 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={revenueData}>
+                  <BarChart data={monthlyData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#E5E5E5" />
                     <XAxis dataKey="month" stroke="#666666" />
                     <YAxis stroke="#666666" />
@@ -199,7 +229,8 @@ export default function Dashboard() {
                         backgroundColor: 'white', 
                         border: '1px solid #E5E5E5',
                         borderRadius: '8px'
-                      }} 
+                      }}
+                      formatter={(value: number) => [value, 'Serviços']}
                     />
                     <Bar dataKey="services" fill="#007BFF" radius={[4, 4, 0, 0]} />
                   </BarChart>
@@ -219,32 +250,38 @@ export default function Dashboard() {
                 <ResponsiveContainer width="100%" height={200}>
                   <PieChart>
                     <Pie
-                      data={servicesData}
+                      data={serviceDistribution}
                       cx="50%"
                       cy="50%"
                       outerRadius={80}
                       dataKey="value"
                     >
-                      {servicesData.map((entry, index) => (
+                      {serviceDistribution.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
-                    <Tooltip />
+                    <Tooltip formatter={(value: number) => [`${value}%`, 'Participação']} />
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="space-y-2 mt-4">
-                  {servicesData.map((service, index) => (
-                    <div key={index} className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <div 
-                          className="w-3 h-3 rounded-full mr-2" 
-                          style={{ backgroundColor: service.color }}
-                        />
-                        <span className="text-sm text-muted-foreground">{service.name}</span>
+                  {serviceDistribution.length > 0 ? (
+                    serviceDistribution.map((service, index) => (
+                      <div key={index} className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <div 
+                            className="w-3 h-3 rounded-full mr-2" 
+                            style={{ backgroundColor: service.color }}
+                          />
+                          <span className="text-sm text-muted-foreground">{service.name}</span>
+                        </div>
+                        <span className="text-sm font-medium">{service.value}%</span>
                       </div>
-                      <span className="text-sm font-medium">{service.value}%</span>
-                    </div>
-                  ))}
+                    ))
+                  ) : (
+                    <p className="text-sm text-muted-foreground text-center py-4">
+                      Nenhum serviço concluído ainda
+                    </p>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -258,28 +295,45 @@ export default function Dashboard() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {upcomingAppointments.map((appointment) => (
-                  <div key={appointment.id} className="flex items-center justify-between p-3 bg-secondary rounded-lg">
-                    <div className="flex-1">
-                      <p className="font-medium text-foreground">{appointment.client}</p>
-                      <p className="text-sm text-muted-foreground">{appointment.service}</p>
-                      <p className="text-sm text-primary font-medium">{appointment.time}</p>
-                    </div>
-                    <div className="flex flex-col items-end space-y-1">
-                      <Badge variant={appointment.status === 'confirmed' ? 'default' : 'secondary'}>
-                        {appointment.status === 'confirmed' ? 'Confirmado' : 'Pendente'}
-                      </Badge>
-                      <div className="flex space-x-1">
-                        <Button size="sm" variant="ghost" className="p-1">
-                          <CheckCircle className="w-4 h-4 text-success" />
-                        </Button>
-                        <Button size="sm" variant="ghost" className="p-1">
-                          <XCircle className="w-4 h-4 text-destructive" />
-                        </Button>
+                {upcomingAppointments.length > 0 ? (
+                  upcomingAppointments.map((appointment) => (
+                    <div key={appointment.id} className="flex items-center justify-between p-3 bg-secondary rounded-lg">
+                      <div className="flex-1">
+                        <p className="font-medium text-foreground">{appointment.client_name}</p>
+                        <p className="text-sm text-muted-foreground">{appointment.service_name}</p>
+                        <p className="text-sm text-primary font-medium">
+                          {new Date(appointment.appointment_date).toLocaleTimeString('pt-BR', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </p>
+                      </div>
+                      <div className="flex flex-col items-end space-y-1">
+                        <Badge variant={appointment.status === 'confirmed' ? 'default' : 'secondary'}>
+                          {appointment.status === 'confirmed' ? 'Confirmado' : 
+                           appointment.status === 'pending' ? 'Pendente' : 
+                           appointment.status === 'completed' ? 'Concluído' : 'Cancelado'}
+                        </Badge>
+                        {appointment.status === 'pending' && (
+                          <div className="flex space-x-1">
+                            <Button size="sm" variant="ghost" className="p-1">
+                              <CheckCircle className="w-4 h-4 text-success" />
+                            </Button>
+                            <Button size="sm" variant="ghost" className="p-1">
+                              <XCircle className="w-4 h-4 text-destructive" />
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </div>
+                  ))
+                ) : (
+                  <div className="text-center text-muted-foreground py-8">
+                    <Clock className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                    <p>Nenhum agendamento próximo</p>
+                    <p className="text-sm">Os próximos agendamentos aparecerão aqui</p>
                   </div>
-                ))}
+                )}
               </CardContent>
             </Card>
           </div>
