@@ -9,6 +9,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { NetworkStatusIndicator } from "@/components/NetworkStatusIndicator";
+import { ConnectivityDiagnostic } from "@/components/ConnectivityDiagnostic";
 import { isNetworkError } from "@/utils/retryUtils";
 
 export default function LoginPage() {
@@ -115,7 +116,11 @@ export default function LoginPage() {
         </Link>
 
         {/* Network Status Indicator */}
-        <NetworkStatusIndicator />
+        {/* Network Status and Diagnostics */}
+        <div className="space-y-4 mb-6">
+          <NetworkStatusIndicator />
+          {networkError && <ConnectivityDiagnostic />}
+        </div>
 
         <Card className="border-card-border shadow-lg">
           <CardHeader className="text-center space-y-4">
