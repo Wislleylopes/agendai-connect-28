@@ -226,11 +226,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       if (error) {
         console.error('Error signing out from Supabase:', error);
+        throw error;
       }
       
       console.log('Logout concluído');
+      
+      // Redirect to home page after successful logout
+      window.location.href = '/';
     } catch (error) {
       console.error('Error during signOut:', error);
+      throw error;
     } finally {
       // Ensure state is cleared regardless of errors
       setUser(null);

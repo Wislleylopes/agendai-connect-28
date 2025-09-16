@@ -6,11 +6,22 @@ import { useAuth } from "@/contexts/AuthContext";
 
 interface DashboardLayoutProps {
   children: ReactNode;
-  type: "professional" | "admin";
+  type?: "professional" | "admin" | "client";
 }
 
 export function DashboardLayout({ children, type }: DashboardLayoutProps) {
   const { profile } = useAuth();
+
+  // For client dashboard, render without sidebar
+  if (type === "client") {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-8">
+          {children}
+        </div>
+      </div>
+    );
+  }
 
   const SidebarComponent = type === "professional" ? ProfessionalSidebar : AdminSidebar;
 
@@ -36,7 +47,7 @@ export function DashboardLayout({ children, type }: DashboardLayoutProps) {
           </header>
 
           {/* Main Content */}
-          <main className="flex-1 overflow-auto">
+          <main className="flex-1 overflow-auto p-6">
             {children}
           </main>
         </div>

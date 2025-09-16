@@ -59,6 +59,23 @@ export default function LoginPage() {
             variant: "destructive",
           });
         }
+      } else {
+        // Redirect immediately after successful login
+        if (profile) {
+          switch (profile.user_role) {
+            case 'admin':
+              navigate('/admin-dashboard');
+              break;
+            case 'professional':
+              navigate('/professional-dashboard');
+              break;
+            case 'client':
+              navigate('/cliente-dashboard');
+              break;
+            default:
+              navigate('/');
+          }
+        }
       }
     } catch (error) {
       console.error('Error during login:', error);

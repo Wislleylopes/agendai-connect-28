@@ -20,7 +20,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
+
 import { useToast } from "@/hooks/use-toast";
 
 const items = [
@@ -33,7 +33,7 @@ const items = [
 
 export function ProfessionalSidebar() {
   const { state } = useSidebar();
-  const { profile } = useAuth();
+  const { profile, signOut } = useAuth();
   const { toast } = useToast();
   const location = useLocation();
   const currentPath = location.pathname;
@@ -45,7 +45,7 @@ export function ProfessionalSidebar() {
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut();
+      await signOut();
       toast({
         title: "Logout realizado",
         description: "Você foi desconectado com sucesso.",
