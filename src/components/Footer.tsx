@@ -1,9 +1,7 @@
 import { Calendar, Mail, Phone, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
-
 export const Footer = () => {
-  return (
-    <footer className="bg-foreground text-white">
+  return <footer className="bg-foreground text-white">
       <div className="container mx-auto px-4 py-16">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand */}
@@ -94,10 +92,9 @@ export const Footer = () => {
             © 2024 AgendAI. Todos os direitos reservados.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <span className="text-gray-400">Feito com ❤️ no Brasil</span>
+            
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
