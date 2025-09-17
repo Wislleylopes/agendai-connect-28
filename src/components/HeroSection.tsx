@@ -59,21 +59,6 @@ export const HeroSection = () => {
               </div>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-8 pt-8 border-t border-card-border">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">1000+</div>
-                <div className="text-sm text-muted-foreground">Profissionais</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">5000+</div>
-                <div className="text-sm text-muted-foreground">Agendamentos</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">4.9★</div>
-                <div className="text-sm text-muted-foreground">Avaliação</div>
-              </div>
-            </div>
           </div>
 
           {/* Hero Image */}
