@@ -72,18 +72,6 @@ export const HeroSection = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent" />
             </div>
             
-            {/* Floating Card */}
-            <div className="absolute -bottom-6 -left-6 bg-background p-6 rounded-xl shadow-lg border border-card-border">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-success rounded-full flex items-center justify-center">
-                  <Calendar className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <div className="font-semibold text-foreground">Agendamento Confirmado!</div>
-                  <div className="text-sm text-muted-foreground">João Silva - 14:00</div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
