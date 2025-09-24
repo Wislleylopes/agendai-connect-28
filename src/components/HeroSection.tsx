@@ -36,7 +36,7 @@ export const HeroSection = () => {
                 </Button>
               </Link>
               <div className="flex gap-2">
-                <Link to="/cliente-dashboard">
+                <Link to="/client-dashboard">
                   <Button 
                     size="lg" 
                     variant="outline" 

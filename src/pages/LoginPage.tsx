@@ -33,7 +33,7 @@ export default function LoginPage() {
           navigate('/professional-dashboard');
           break;
         case 'client':
-          navigate('/cliente-dashboard');
+          navigate('/client-dashboard');
           break;
         default:
           navigate('/');
@@ -71,7 +71,7 @@ export default function LoginPage() {
               navigate('/professional-dashboard');
               break;
             case 'client':
-              navigate('/cliente-dashboard');
+              navigate('/client-dashboard');
               break;
             default:
               navigate('/');
