@@ -21,7 +21,7 @@ export default function UserInfoPage() {
       case 'professional':
         return '/professional-dashboard';
       case 'client':
-        return '/cliente-dashboard';
+        return '/client-dashboard';
       default:
         return '/';
     }
